@@ -25,34 +25,42 @@ namespace gestionBancariaApp
         private void btOperar_Click(object sender, EventArgs e)
         {
             string operacion = "";
-            double cantidad = Convert.ToDouble(txtCantidad.Text); // Cogemos la cantidad del TextBox y la pasamos a número
+            double cantidad = 0.0d;
 
-
-            gestionBancaria cuenta = new gestionBancaria(Int32.Parse(txtSaldo.Text));
-
-            if (rbReintegro.Checked)
-                operacion = "R";
-
-            if (radioButton1.Checked)
-                operacion = "I";
-
-            switch (operacion)
+            try
             {
+                while (!double.TryParse(txtCantidad.Text, out cantidad))
+                {
+                    throw new InvalidCastException("Introduce un valor numerico");
+                }
 
-                case "R":
-                    cuenta.realizarReintegro(cantidad);
-                    break;
+                gestionBancaria cuenta = new gestionBancaria(Int32.Parse(txtSaldo.Text));
 
-                case "I":
-                    cuenta.realizarIngreso(cantidad);
-                    break;
-                default:
-                    cuenta.mostrarError(2);
-                break;
+                if (rbReintegro.Checked)
+                    operacion = "R";
 
+                if (radioButton1.Checked)
+                    operacion = "I";
+
+                switch (operacion)
+                {
+                    case "R":
+                        cuenta.realizarReintegro(cantidad);
+                        break;
+
+                    case "I":
+                        cuenta.realizarIngreso(cantidad);
+                        break;
+                    default:
+                        throw new NullReferenceException("Debes seleccionar una opción");
+                }
+
+                txtSaldo.Text = cuenta.obtenerSaldo().ToString();
             }
-
-            txtSaldo.Text = cuenta.obtenerSaldo().ToString();
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
 
